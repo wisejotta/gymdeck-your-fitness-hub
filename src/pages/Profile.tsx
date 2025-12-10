@@ -5,9 +5,12 @@ import { Input } from '@/components/ui/input';
 import { XPBadge } from '@/components/stats/XPBadge';
 import { Settings, Edit2, LogOut, Flame, Target, Calendar, Trophy } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { user, setUser, sessions } = useAppStore();
   const [isEditing, setIsEditing] = useState(false);
   const [username, setUsername] = useState(user?.username || '');
@@ -38,7 +41,7 @@ export default function Profile() {
       <div className="px-5 pt-8 pb-6">
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-display text-4xl text-foreground">Profile</h1>
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
+          <Button variant="ghost" size="icon" className="text-muted-foreground" onClick={() => navigate('/settings')}>
             <Settings className="w-5 h-5" />
           </Button>
         </div>
@@ -155,6 +158,11 @@ export default function Profile() {
         <Button
           variant="outline"
           className="w-full border-destructive/30 text-destructive hover:bg-destructive/10"
+          onClick={async () => {
+            await supabase.auth.signOut();
+            toast.success('Signed out');
+            navigate('/auth');
+          }}
         >
           <LogOut className="w-4 h-4 mr-2" />
           Sign Out
